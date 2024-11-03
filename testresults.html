@@ -87,14 +87,14 @@
     // Populate results
     reactionData.forEach(entry => {
       const row = document.createElement("tr");
-      row.innerHTML = `
+      row.innerHTML = 
         <td>${entry.audioFile}</td>
         <td>${entry.name}</td>
         <td>${entry.congruency}</td>
         <td>${entry.keyPressed}</td>
         <td>${entry.correct ? "Yes" : "No"}</td>
         <td>${entry.reactionTime}</td>
-      `;
+      ;
 
       // Append the row to the appropriate table based on ethnicity
       if (entry.ethnicity === "Black") {
@@ -105,10 +105,10 @@
     });
 
     if (blackResultsTableBody.children.length === 0) {
-      blackResultsTableBody.innerHTML = `<tr><td colspan="6">No data available for Black ethnicity.</td></tr>`;
+      blackResultsTableBody.innerHTML = <tr><td colspan="6">No data available for Black ethnicity.</td></tr>;
     }
     if (whiteResultsTableBody.children.length === 0) {
-      whiteResultsTableBody.innerHTML = `<tr><td colspan="6">No data available for White ethnicity.</td></tr>`;
+      whiteResultsTableBody.innerHTML = <tr><td colspan="6">No data available for White ethnicity.</td></tr>;
     }
   </script>
 </body>
