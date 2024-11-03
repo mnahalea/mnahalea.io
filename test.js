@@ -1,116 +1,114 @@
-document.addEventListener("DOMContentLoaded", () => {
-  let startTime = 0;
-  let responseRecorded = false;
-  let currentAudioFile = "";
-  const reactionData = [];
-
-  const speakers = [
-    { name: "Speaker1", ethnicity: "White" },
-    { name: "Speaker2", ethnicity: "White" },
-    { name: "Speaker3", ethnicity: "Black" },
-    { name: "Speaker4", ethnicity: "Black" }
-  ];
-
-  const names = [
-    "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
-    "Connor", "Jake", "Brett", "Tanner", "Hunter",
-    "Alexander", "Austin", "Brad", "Travis", "John",
-    "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
-    "Carlos", "Miguel", "Alejandro"
-  ];
-
-  const audioSources = names.flatMap(name =>
-    speakers.map(speaker => ({
-      audioFile: `audio/${speaker.name}_${name}_Stimulus.mp3`,
-      name,
-      speaker: speaker.name,
-      ethnicity: speaker.ethnicity,
-      congruency: Math.random() < 0.5 ? "Congruent" : "Incongruent", // Randomly assign congruency for demo
-    }))
-  );
-
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Results</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
     }
-    return array;
-  }
-
-  function balancedShuffle() {
-    const shuffled = shuffleArray([...audioSources]);
-    const whiteSubset = shuffled.filter(a => a.ethnicity === "White").slice(0, 16);
-    const blackSubset = shuffled.filter(a => a.ethnicity === "Black").slice(0, 16);
-    return shuffleArray([...whiteSubset, ...blackSubset]);
-  }
-
-  let testAudioQueue = balancedShuffle();
-  let audio = new Audio();
-  const startButton = document.getElementById("startButton");
-
-  if (startButton) {
-    startButton.onclick = function () {
-      startButton.style.display = "none";
-      startTest();
-    };
-  }
-
-  function startTest() {
-    if (testAudioQueue.length === 0) {
-      localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      // Check if data is saved correctly before redirecting
-      console.log("Redirecting to results page...");
-      window.location.href = "test_results.html"; // Redirect to the results page
-      return;
+    h1 {
+      font-size: 24px;
+      color: #333;
     }
+    h2 {
+      margin-top: 40px;
+      color: #555;
+    }
+    table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Results</h1>
 
-    const nextAudio = testAudioQueue.shift();
-    currentAudioFile = nextAudio.audioFile;
-    responseRecorded = false;
+  <!-- Black Ethnicity Results -->
+  <h2>Black Ethnicity</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Audio File</th>
+        <th>Name</th>
+        <th>Congruency</th>
+        <th>Key Pressed</th>
+        <th>Correct</th>
+        <th>Reaction Time (ms)</th>
+      </tr>
+    </thead>
+    <tbody id="blackResultsTableBody">
+      <!-- Rows will be populated here by JavaScript -->
+    </tbody>
+  </table>
 
-    audio.src = currentAudioFile; // Set the audio source here
+  <!-- White Ethnicity Results -->
+  <h2>White Ethnicity</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Audio File</th>
+        <th>Name</th>
+        <th>Congruency</th>
+        <th>Key Pressed</th>
+        <th>Correct</th>
+        <th>Reaction Time (ms)</th>
+      </tr>
+    </thead>
+    <tbody id="whiteResultsTableBody">
+      <!-- Rows will be populated here by JavaScript -->
+    </tbody>
+  </table>
 
-    audio.addEventListener('canplaythrough', () => {
-      setTimeout(() => {
-        startTime = Date.now();
-        audio.play().then(() => {
-          console.log("Playing audio:", currentAudioFile);
-        }).catch(error => {
-          console.error("Audio playback failed:", error);
-        });
-      }, 2000);
-    }, { once: true });
+  <script>
+    // Retrieve reaction data from localStorage
+    const reactionData = JSON.parse(localStorage.getItem("reactionData"));
 
-    audio.onended = () => {
-      responseRecorded = false; // Reset for the next audio
-    };
-  }
+    // Reference table body elements for each ethnicity
+    const blackResultsTableBody = document.getElementById("blackResultsTableBody");
+    const whiteResultsTableBody = document.getElementById("whiteResultsTableBody");
 
-  function recordReactionTime(keyPressed) {
-    if (responseRecorded) return; // Prevent recording multiple times during playback
-    responseRecorded = true;
-    const reactionTime = Date.now() - startTime;
+    // Check if there is reaction data and then separate entries by ethnicity
+    if (reactionData && reactionData.length > 0) {
+      reactionData.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = 
+          <td>${entry.audioFile}</td>
+          <td>${entry.name}</td>
+          <td>${entry.congruency}</td>
+          <td>${entry.keyPressed}</td>
+          <td>${entry.correct ? "Yes" : "No"}</td>
+          <td>${entry.reactionTime}</td>
+        ;
 
-    // Determine if the response was correct based on congruency
-    const correct = (keyPressed === 'A' && currentAudioFile.includes("Black")) || 
-                    (keyPressed === 'L' && currentAudioFile.includes("White"));
-
-    reactionData.push({
-      audioFile: currentAudioFile,
-      name: currentAudioFile.split('_')[1], // Extract name from the file name
-      congruency: nextAudio.congruency, // Save congruency from nextAudio
-      keyPressed,
-      correct,
-      reactionTime
-    });
-
-    setTimeout(() => {
-      startTest(); // Move to the next audio after a delay
-    }, 1000);
-  }
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key.toLowerCase() === 'a') recordReactionTime('A');
-    else if (event.key.toLowerCase() === 'l') recordReactionTime('L');
-  });
-});
+        // Append the row to the appropriate table based on ethnicity
+        if (entry.ethnicity === "Black") {
+          blackResultsTableBody.appendChild(row);
+        } else if (entry.ethnicity === "White") {
+          whiteResultsTableBody.appendChild(row);
+        }
+      });
+    } else {
+      // Display message if no data is available for each ethnicity
+      blackResultsTableBody.innerHTML = <tr><td colspan="6">No data available for Black ethnicity.</td></tr>;
+      whiteResultsTableBody.innerHTML = <tr><td colspan="6">No data available for White ethnicity.</td></tr>;
+    }
+  </script>
+</body>
+</html>
