@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   let startTime = 0;
+  let responseRecorded = false;
   let currentAudioFile = "";
   const reactionData = [];
-  let responseRecorded = false; // This will track if a response has been recorded for the current audio
 
   const speakers = [
     { name: "Speaker1", ethnicity: "White" },
@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
-    "Connor", "Jake", "Brett", "Tanner", "Hunter",
-    "Alexander", "Austin", "Brad", "Travis", "John",
+    "Connor", "Jake", "Brett", "Tanner", "Hunter", "Austin",
+    "Alexander", "Austin", "Brad", "Travis", "John", "Tyrone", 
     "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
     "Carlos", "Miguel", "Alejandro"
   ];
@@ -24,10 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
       audioFile: `audio/${speaker.name}_${name}_Stimulus.mp3`,
       name,
       speaker: speaker.name,
-      ethnicity: speaker.ethnicity,
-      congruency: Math.random() < 0.5 ? "Congruent" : "Incongruent", // Randomly assign congruency for demo
+      ethnicity: speaker.ethnicity
     }))
   );
+
+  console.log("Audio Sources:", audioSources);  // Debugging to verify all audio files are generated correctly
 
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -41,75 +42,59 @@ document.addEventListener("DOMContentLoaded", () => {
     const shuffled = shuffleArray([...audioSources]);
     const whiteSubset = shuffled.filter(a => a.ethnicity === "White").slice(0, 16);
     const blackSubset = shuffled.filter(a => a.ethnicity === "Black").slice(0, 16);
+    console.log("White Subset:", whiteSubset);  // Debugging to check the subset
+    console.log("Black Subset:", blackSubset);  // Debugging to check the subset
     return shuffleArray([...whiteSubset, ...blackSubset]);
   }
 
   let testAudioQueue = balancedShuffle();
-  let audio = new Audio();
-  const startButton = document.getElementById("startButton");
+  console.log("Initial Test Queue:", testAudioQueue);  // Debugging to verify the initial queue
 
+  let audio = new Audio();
+
+  const startButton = document.getElementById("startButton");
   if (startButton) {
     startButton.onclick = function () {
-      startButton.style.display = "none"; // Hide the start button
-      startTest(); // Start the test
+      startButton.style.display = "none";
+      startTest();
     };
+  } else {
+    console.error("Start button not found in the document.");
   }
 
   function startTest() {
     if (testAudioQueue.length === 0) {
+      console.log("Test completed. Saving data.");
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      console.log("Redirecting to results page...");
-      window.location.href = "test_results.html"; // Redirect to the results page
+      window.location.href = "congratulations.html";
       return;
     }
 
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
-    responseRecorded = false; // Reset response tracking for the new audio
+    audio.src = currentAudioFile;
+    responseRecorded = false;
 
-    audio.src = currentAudioFile; // Set the audio source here
-
-    // Wait until the audio is ready to play before starting playback
-    audio.addEventListener('canplaythrough', () => {
-      setTimeout(() => {
-        startTime = Date.now();
-        audio.play().then(() => {
-          console.log("Playing audio:", currentAudioFile);
-        }).catch(error => {
-          console.error("Audio playback failed:", error);
-        });
-      }, 2000); // Delay before audio starts
-    }, { once: true });
-
-    audio.onended = () => {
-      // No need to reset responseRecorded here
-      // The next audio will be handled in the key press event
-    };
+    setTimeout(() => {
+      startTime = Date.now();
+      audio.play().catch(error => {
+        console.error("Audio playback failed:", error);
+      });
+      console.log("Playing audio:", currentAudioFile);
+    }, 2000);
   }
 
   function recordReactionTime(keyPressed) {
-    if (responseRecorded) return; // Prevent recording multiple times during this audio
-    responseRecorded = true; // Set to true to prevent further recordings until the next audio
-
+    if (responseRecorded) return;
+    responseRecorded = true;
     const reactionTime = Date.now() - startTime;
-
-    // Determine if the response was correct based on congruency
-    const correct = (keyPressed === 'A' && currentAudioFile.includes("Black")) || 
-                    (keyPressed === 'L' && currentAudioFile.includes("White"));
-
     reactionData.push({
       audioFile: currentAudioFile,
-      name: currentAudioFile.split('_')[1], // Extract name from the file name
-      congruency: nextAudio.congruency, // Save congruency from nextAudio
       keyPressed,
-      correct,
       reactionTime
     });
-
-    // Move to the next audio after a delay
-    setTimeout(() => {
-      startTest(); // Proceed to the next audio
-    }, 1000); // Delay before starting the next audio
+    console.log("Reaction recorded:", { currentAudioFile, keyPressed, reactionTime });
+    setTimeout(startTest, 1000);
   }
 
   document.addEventListener('keydown', (event) => {
