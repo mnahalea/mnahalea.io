@@ -14,8 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
     "Connor", "Jake", "Brett", "Tanner", "Hunter", "Austin",
-    "Alexander", "Austin", "Brad", "Travis", "John", "Tyrone", "Marquise",
-    "Lamar", "Kareem", "Demetrius", "Juan", "Carlos", "Miguel", "Alejandro"
+    "Alexander", "Austin", "Brad", "Travis", "John", "Tyrone", 
+    "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
+    "Carlos", "Miguel", "Alejandro"
   ];
 
   const audioSources = names.flatMap(name =>
@@ -26,6 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ethnicity: speaker.ethnicity
     }))
   );
+
+  console.log("Audio Sources:", audioSources);  // Debugging to verify all audio files are generated correctly
 
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -39,19 +42,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const shuffled = shuffleArray([...audioSources]);
     const whiteSubset = shuffled.filter(a => a.ethnicity === "White").slice(0, 16);
     const blackSubset = shuffled.filter(a => a.ethnicity === "Black").slice(0, 16);
+    console.log("White Subset:", whiteSubset);  // Debugging to check the subset
+    console.log("Black Subset:", blackSubset);  // Debugging to check the subset
     return shuffleArray([...whiteSubset, ...blackSubset]);
   }
 
   let testAudioQueue = balancedShuffle();
+  console.log("Initial Test Queue:", testAudioQueue);  // Debugging to verify the initial queue
+
   let audio = new Audio();
 
-  document.getElementById("startButton").onclick = function () {
-    document.getElementById("startButton").style.display = "none";
-    startTest();
-  };
+  const startButton = document.getElementById("startButton");
+  if (startButton) {
+    startButton.onclick = function () {
+      startButton.style.display = "none";
+      startTest();
+    };
+  } else {
+    console.error("Start button not found in the document.");
+  }
 
   function startTest() {
     if (testAudioQueue.length === 0) {
+      console.log("Test completed. Saving data.");
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
       window.location.href = "congratulations.html";
       return;
@@ -64,7 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => {
       startTime = Date.now();
-      audio.play();
+      audio.play().catch(error => {
+        console.error("Audio playback failed:", error);
+      });
+      console.log("Playing audio:", currentAudioFile);
     }, 2000);
   }
 
@@ -77,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
       keyPressed,
       reactionTime
     });
+    console.log("Reaction recorded:", { currentAudioFile, keyPressed, reactionTime });
     setTimeout(startTest, 1000);
   }
 
