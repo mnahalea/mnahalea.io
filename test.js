@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
     "Connor", "Jake", "Brett", "Tanner", "Hunter",
-    "Alexander", "Austin", "Brad", "Travis", "John", 
+    "Alexander", "Austin", "Brad", "Travis", "John",
     "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
     "Carlos", "Miguel", "Alejandro"
   ];
@@ -58,7 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function startTest() {
     if (testAudioQueue.length === 0) {
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      window.location.href = "test_results.html"; // Ensure to redirect to the results page correctly
+      // Check if data is saved correctly before redirecting
+      console.log("Redirecting to results page...");
+      window.location.href = "test_results.html"; // Redirect to the results page
       return;
     }
 
@@ -73,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         startTime = Date.now();
         audio.play().then(() => {
           console.log("Playing audio:", currentAudioFile);
-          responseRecorded = false; // Reset for new audio
         }).catch(error => {
           console.error("Audio playback failed:", error);
         });
@@ -81,8 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { once: true });
 
     audio.onended = () => {
-      // Audio has finished playing; enable keypress recording
-      responseRecorded = false;
+      responseRecorded = false; // Reset for the next audio
     };
   }
 
