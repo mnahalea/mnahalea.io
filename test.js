@@ -58,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function startTest() {
     if (testAudioQueue.length === 0) {
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      // Check if data is saved correctly before redirecting
       console.log("Redirecting to results page...");
       window.location.href = "test_results.html"; // Redirect to the results page
       return;
@@ -70,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     audio.src = currentAudioFile; // Set the audio source here
 
-    audio.addEventListener('canplaythrough', () => {
+    audio.oncanplaythrough = () => {
       setTimeout(() => {
         startTime = Date.now();
         audio.play().then(() => {
@@ -79,10 +78,17 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("Audio playback failed:", error);
         });
       }, 2000);
-    }, { once: true });
+    };
 
     audio.onended = () => {
-      responseRecorded = false; // Reset for the next audio
+      // Reset the response recorded flag when the audio ends
+      responseRecorded = false;
+      // Move to the next audio
+      startTest();
+    };
+
+    audio.onerror = (e) => {
+      console.error("Error loading audio file:", currentAudioFile, e);
     };
   }
 
