@@ -24,8 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       audioFile: `audio/${speaker.name}_${name}_Stimulus.mp3`,
       name,
       speaker: speaker.name,
-      ethnicity: speaker.ethnicity,
-      congruency: Math.random() < 0.5 ? "Congruent" : "Incongruent", // Randomly assign congruency for demo
+      ethnicity: speaker.ethnicity
     }))
   );
 
@@ -46,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let testAudioQueue = balancedShuffle();
   let audio = new Audio();
+
   const startButton = document.getElementById("startButton");
   if (startButton) {
     startButton.onclick = function () {
@@ -57,12 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function startTest() {
     if (testAudioQueue.length === 0) {
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      window.location.href = "test_results.html"; // Ensure to redirect to the results page correctly
+      window.location.href = "congratulations.html";
       return;
     }
 
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
+    audio.src = currentAudioFile;
     responseRecorded = false;
 
     audio.addEventListener('canplaythrough', () => {
@@ -81,24 +82,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (responseRecorded) return;
     responseRecorded = true;
     const reactionTime = Date.now() - startTime;
-
-    // Determine if the response was correct based on congruency
-    const correct = (keyPressed === 'A' && currentAudioFile.includes("Black")) || 
-                    (keyPressed === 'L' && currentAudioFile.includes("White"));
-
     reactionData.push({
       audioFile: currentAudioFile,
-      name: currentAudioFile.split('_')[1], // Extract name from the file name
-      congruency: nextAudio.congruency, // Save congruency from nextAudio
       keyPressed,
-      correct,
       reactionTime
     });
-
-    setTimeout(() => {
-      startTest();
-      responseRecorded = false; // Reset for the next audio
-    }, 1000);
+    setTimeout(startTest, 1000);
   }
 
   document.addEventListener('keydown', (event) => {
