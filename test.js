@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let testAudioQueue = balancedShuffle();
   let audio = new Audio();
   const startButton = document.getElementById("startButton");
+
   if (startButton) {
     startButton.onclick = function () {
       startButton.style.display = "none";
@@ -65,20 +66,28 @@ document.addEventListener("DOMContentLoaded", () => {
     currentAudioFile = nextAudio.audioFile;
     responseRecorded = false;
 
+    audio.src = currentAudioFile; // Set the audio source here
+
     audio.addEventListener('canplaythrough', () => {
       setTimeout(() => {
         startTime = Date.now();
         audio.play().then(() => {
           console.log("Playing audio:", currentAudioFile);
+          responseRecorded = false; // Reset for new audio
         }).catch(error => {
           console.error("Audio playback failed:", error);
         });
       }, 2000);
     }, { once: true });
+
+    audio.onended = () => {
+      // Audio has finished playing; enable keypress recording
+      responseRecorded = false;
+    };
   }
 
   function recordReactionTime(keyPressed) {
-    if (responseRecorded) return;
+    if (responseRecorded) return; // Prevent recording multiple times during playback
     responseRecorded = true;
     const reactionTime = Date.now() - startTime;
 
@@ -96,8 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setTimeout(() => {
-      startTest();
-      responseRecorded = false; // Reset for the next audio
+      startTest(); // Move to the next audio after a delay
     }, 1000);
   }
 
