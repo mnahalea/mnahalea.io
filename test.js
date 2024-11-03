@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
-    "Connor", "Jake", "Brett", "Tanner", "Hunter", "Austin",
-    "Alexander", "Austin", "Brad", "Travis", "John", "Tyrone", 
+    "Connor", "Jake", "Brett", "Tanner", "Hunter",
+    "Alexander", "Austin", "Brad", "Travis", "John", 
     "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
     "Carlos", "Miguel", "Alejandro"
   ];
