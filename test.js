@@ -94,6 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
       reactionTime
     });
     console.log("Reaction recorded:", { currentAudioFile, keyPressed, reactionTime });
+    
+    // Automatically start the next audio after recording the reaction
     setTimeout(startTest, 1000);
   }
 
