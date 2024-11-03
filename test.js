@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let startTime = 0;
   let currentAudioFile = "";
   const reactionData = [];
-  let responseRecorded = false; // This now only controls the first response per audio
+  let responseRecorded = false; // This will track if a response has been recorded for the current audio
 
   const speakers = [
     { name: "Speaker1", ethnicity: "White" },
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (startButton) {
     startButton.onclick = function () {
       startButton.style.display = "none"; // Hide the start button
-      startTest(); // Begin the test when the button is pressed
+      startTest(); // Start the test
     };
   }
 
@@ -65,10 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
-    responseRecorded = false; // Reset this to allow for first response
+    responseRecorded = false; // Reset response tracking for the new audio
 
     audio.src = currentAudioFile; // Set the audio source here
 
+    // Wait until the audio is ready to play before starting playback
     audio.addEventListener('canplaythrough', () => {
       setTimeout(() => {
         startTime = Date.now();
@@ -77,17 +78,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }).catch(error => {
           console.error("Audio playback failed:", error);
         });
-      }, 2000);
+      }, 2000); // Delay before audio starts
     }, { once: true });
 
     audio.onended = () => {
-      responseRecorded = false; // Allow for a response after audio ends
+      // When the audio ends, reset the response recorded flag
+      responseRecorded = false; 
     };
   }
 
   function recordReactionTime(keyPressed) {
     if (responseRecorded) return; // Prevent recording multiple times during this audio
-    responseRecorded = true; // Now only prevents multiple responses for the current audio
+    responseRecorded = true; // Set to true to prevent further recordings until the next audio
+
     const reactionTime = Date.now() - startTime;
 
     // Determine if the response was correct based on congruency
@@ -105,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Move to the next audio after a delay
     setTimeout(() => {
-      startTest(); 
+      startTest(); // Proceed to the next audio
     }, 1000);
   }
 
