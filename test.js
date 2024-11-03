@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
-    "Connor", "Jake", "Brett", "Tanner", "Hunter", "Austin",
-    "Alexander", "Austin", "Brad", "Travis", "John", "Tyrone", 
+    "Connor", "Jake", "Brett", "Tanner", "Hunter",
+    "Alexander", "Austin", "Brad", "Travis", "John",
     "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
     "Carlos", "Miguel", "Alejandro"
   ];
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function balancedShuffle() {
     const shuffled = shuffleArray([...audioSources]);
-    const whiteSubset = shuffled.filter(a => a.ethnicity === "White").slice(0, 16);
-    const blackSubset = shuffled.filter(a => a.ethnicity === "Black").slice(0, 16);
+    const whiteSubset = shuffled.filter(a => a.ethnicity === "White").slice(0, 12);
+    const blackSubset = shuffled.filter(a => a.ethnicity === "Black").slice(0, 12);
     console.log("White Subset:", whiteSubset);  // Debugging to check the subset
     console.log("Black Subset:", blackSubset);  // Debugging to check the subset
     return shuffleArray([...whiteSubset, ...blackSubset]);
