@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const audioSources = names.flatMap(name =>
     speakers.map(speaker => ({
-      audioFile: `audio/${speaker.name}_${name}_Stimulus.mp3`,
+      audioFile: audio/${speaker.name}_${name}_Stimulus.mp3,
       name,
       speaker: speaker.name,
       ethnicity: speaker.ethnicity
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (testAudioQueue.length === 0) {
       console.log("Test completed. Saving data.");
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      window.location.href = "testresults.html";
+      window.location.href = "congratulations.html";
       return;
     }
 
@@ -84,27 +84,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2000);
   }
 
-function recordReactionTime(keyPressed) {
+  function recordReactionTime(keyPressed) {
     if (responseRecorded) return;
     responseRecorded = true;
     const reactionTime = Date.now() - startTime;
-    const correct = (keyPressed === 'A' && /* condition for A being correct */) || (keyPressed === 'L' && /* condition for L being correct */);
-    const congruency = /* Determine congruency based on the current audio context */;
-
     reactionData.push({
-        audioFile: currentAudioFile,
-        name: nextAudio.name, // Assuming nextAudio is accessible
-        congruency: congruency,
-        keyPressed,
-        correct,
-        reactionTime
+      audioFile: currentAudioFile,
+      keyPressed,
+      reactionTime
     });
-    
-    console.log("Reaction recorded:", { audioFile: currentAudioFile, keyPressed, reactionTime });
+    console.log("Reaction recorded:", { currentAudioFile, keyPressed, reactionTime });
     
     // Automatically start the next audio after recording the reaction
     setTimeout(startTest, 1000);
-
   }
 
   document.addEventListener('keydown', (event) => {
