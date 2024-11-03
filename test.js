@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let startTime = 0;
   let responseRecorded = false;
   let currentAudioFile = "";
+  let nextAudio; // Move nextAudio to higher scope
   const reactionData = [];
 
   const speakers = [
@@ -51,6 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("Initial Test Queue:", testAudioQueue);  // Debugging to verify the initial queue
 
   let audio = new Audio();
+  
+  // Error listener for the audio object
+  audio.addEventListener('error', (e) => {
+    console.error("Audio error:", e);
+  });
 
   const startButton = document.getElementById("startButton");
   if (startButton) {
@@ -63,6 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startTest() {
+    console.log("Starting test...");  // Debugging to confirm startTest is called
+    
     if (testAudioQueue.length === 0) {
       console.log("Test completed. Saving data.");
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
@@ -70,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const nextAudio = testAudioQueue.shift();
+    nextAudio = testAudioQueue.shift(); // Assign here
     currentAudioFile = nextAudio.audioFile;
     audio.src = currentAudioFile;
     responseRecorded = false;
@@ -80,34 +88,35 @@ document.addEventListener("DOMContentLoaded", () => {
       audio.play().catch(error => {
         console.error("Audio playback failed:", error);
       });
-      console.log("Playing audio:", currentAudioFile);
+      console.log("Playing audio:", currentAudioFile); // Debugging to confirm audio file
     }, 2000);
   }
 
-function recordReactionTime(keyPressed) {
+  function recordReactionTime(keyPressed) {
     if (responseRecorded) return;
     responseRecorded = true;
     const reactionTime = Date.now() - startTime;
-    const correct = (keyPressed === 'A' && /* condition for A being correct */) || (keyPressed === 'L' && /* condition for L being correct */);
+    const correct = (keyPressed === 'A' && /* condition for A being correct */) || 
+                    (keyPressed === 'L' && /* condition for L being correct */);
     const congruency = /* Determine congruency based on the current audio context */;
 
     reactionData.push({
-        audioFile: currentAudioFile,
-        name: nextAudio.name, // Assuming nextAudio is accessible
-        congruency: congruency,
-        keyPressed,
-        correct,
-        reactionTime
+      audioFile: currentAudioFile,
+      name: nextAudio.name, // Using nextAudio from the higher scope
+      congruency: congruency,
+      keyPressed,
+      correct,
+      reactionTime
     });
     
     console.log("Reaction recorded:", { audioFile: currentAudioFile, keyPressed, reactionTime });
     
     // Automatically start the next audio after recording the reaction
     setTimeout(startTest, 1000);
-
   }
 
   document.addEventListener('keydown', (event) => {
+    console.log("Key pressed:", event.key); // Log the key pressed
     if (event.key.toLowerCase() === 'a') recordReactionTime('A');
     else if (event.key.toLowerCase() === 'l') recordReactionTime('L');
   });
