@@ -28,8 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }))
   );
 
-  console.log("Audio Sources:", audioSources);  // Debugging to verify all audio files are generated correctly
-
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -42,14 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const shuffled = shuffleArray([...audioSources]);
     const whiteSubset = shuffled.filter(a => a.ethnicity === "White").slice(0, 16);
     const blackSubset = shuffled.filter(a => a.ethnicity === "Black").slice(0, 16);
-    console.log("White Subset:", whiteSubset);  // Debugging to check the subset
-    console.log("Black Subset:", blackSubset);  // Debugging to check the subset
     return shuffleArray([...whiteSubset, ...blackSubset]);
   }
 
   let testAudioQueue = balancedShuffle();
-  console.log("Initial Test Queue:", testAudioQueue);  // Debugging to verify the initial queue
-
   let audio = new Audio();
 
   const startButton = document.getElementById("startButton");
@@ -58,13 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
       startButton.style.display = "none";
       startTest();
     };
-  } else {
-    console.error("Start button not found in the document.");
   }
 
   function startTest() {
     if (testAudioQueue.length === 0) {
-      console.log("Test completed. Saving data.");
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
       window.location.href = "congratulations.html";
       return;
@@ -75,13 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
     audio.src = currentAudioFile;
     responseRecorded = false;
 
-    setTimeout(() => {
-      startTime = Date.now();
-      audio.play().catch(error => {
-        console.error("Audio playback failed:", error);
-      });
-      console.log("Playing audio:", currentAudioFile);
-    }, 2000);
+    audio.addEventListener('canplaythrough', () => {
+      setTimeout(() => {
+        startTime = Date.now();
+        audio.play().then(() => {
+          console.log("Playing audio:", currentAudioFile);
+        }).catch(error => {
+          console.error("Audio playback failed:", error);
+        });
+      }, 2000);
+    }, { once: true });
   }
 
   function recordReactionTime(keyPressed) {
@@ -93,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
       keyPressed,
       reactionTime
     });
-    console.log("Reaction recorded:", { currentAudioFile, keyPressed, reactionTime });
     setTimeout(startTest, 1000);
   }
 
