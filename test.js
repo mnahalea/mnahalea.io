@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
     startButton.onclick = function () {
       startButton.style.display = "none";
       startTest();
-    };
   } else {
     console.error("Start button not found in the document.");
   }
