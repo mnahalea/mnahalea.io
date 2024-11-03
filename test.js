@@ -50,8 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (startButton) {
     startButton.onclick = function () {
-      startButton.style.display = "none";
-      startTest();
+      startButton.style.display = "none"; // Hide the start button
+      startTest(); // Begin the test when the button is pressed
     };
   }
 
