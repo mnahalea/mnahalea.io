@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   let startTime = 0;
-  let responseRecorded = false;
   let currentAudioFile = "";
   const reactionData = [];
+  let responseRecorded = false; // This now only controls the first response per audio
 
   const speakers = [
     { name: "Speaker1", ethnicity: "White" },
@@ -58,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function startTest() {
     if (testAudioQueue.length === 0) {
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      // Check if data is saved correctly before redirecting
       console.log("Redirecting to results page...");
       window.location.href = "test_results.html"; // Redirect to the results page
       return;
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
-    responseRecorded = false;
+    responseRecorded = false; // Reset this to allow for first response
 
     audio.src = currentAudioFile; // Set the audio source here
 
@@ -82,13 +81,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { once: true });
 
     audio.onended = () => {
-      responseRecorded = false; // Reset for the next audio
+      responseRecorded = false; // Allow for a response after audio ends
     };
   }
 
   function recordReactionTime(keyPressed) {
-    if (responseRecorded) return; // Prevent recording multiple times during playback
-    responseRecorded = true;
+    if (responseRecorded) return; // Prevent recording multiple times during this audio
+    responseRecorded = true; // Now only prevents multiple responses for the current audio
     const reactionTime = Date.now() - startTime;
 
     // Determine if the response was correct based on congruency
@@ -104,8 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
       reactionTime
     });
 
+    // Move to the next audio after a delay
     setTimeout(() => {
-      startTest(); // Move to the next audio after a delay
+      startTest(); 
     }, 1000);
   }
 
