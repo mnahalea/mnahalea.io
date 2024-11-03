@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let testAudioQueue = balancedShuffle();
   let audio = new Audio();
   const startButton = document.getElementById("startButton");
+
   if (startButton) {
     startButton.onclick = function () {
       startButton.style.display = "none";
@@ -57,13 +58,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function startTest() {
     if (testAudioQueue.length === 0) {
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      window.location.href = "test_results.html"; // Ensure to redirect to the results page correctly
+      // Check if data is saved correctly before redirecting
+      console.log("Redirecting to results page...");
+      window.location.href = "test_results.html"; // Redirect to the results page
       return;
     }
 
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
     responseRecorded = false;
+
+    audio.src = currentAudioFile; // Set the audio source here
 
     audio.addEventListener('canplaythrough', () => {
       setTimeout(() => {
@@ -75,10 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }, 2000);
     }, { once: true });
+
+    audio.onended = () => {
+      responseRecorded = false; // Reset for the next audio
+    };
   }
 
   function recordReactionTime(keyPressed) {
-    if (responseRecorded) return;
+    if (responseRecorded) return; // Prevent recording multiple times during playback
     responseRecorded = true;
     const reactionTime = Date.now() - startTime;
 
@@ -96,8 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     setTimeout(() => {
-      startTest();
-      responseRecorded = false; // Reset for the next audio
+      startTest(); // Move to the next audio after a delay
     }, 1000);
   }
 
