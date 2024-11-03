@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   let startTime = 0;
+  let responseRecorded = false;
   let currentAudioFile = "";
   const reactionData = [];
-  let responseRecorded = false; // This will track if a response has been recorded for the current audio
 
   const speakers = [
     { name: "Speaker1", ethnicity: "White" },
@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
-    "Connor", "Jake", "Brett", "Tanner", "Hunter",
-    "Alexander", "Austin", "Brad", "Travis", "John",
+    "Connor", "Jake", "Brett", "Tanner", "Hunter", "Austin",
+    "Alexander", "Austin", "Brad", "Travis", "John", "Tyrone", 
     "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
     "Carlos", "Miguel", "Alejandro"
   ];
@@ -46,51 +46,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let testAudioQueue = balancedShuffle();
   let audio = new Audio();
-  const startButton = document.getElementById("startButton");
 
+  const startButton = document.getElementById("startButton");
   if (startButton) {
     startButton.onclick = function () {
-      startButton.style.display = "none"; // Hide the start button
-      startTest(); // Start the test
+      startButton.style.display = "none";
+      startTest();
     };
   }
 
   function startTest() {
     if (testAudioQueue.length === 0) {
       localStorage.setItem("reactionData", JSON.stringify(reactionData));
-      console.log("Redirecting to results page...");
       window.location.href = "test_results.html"; // Redirect to the results page
       return;
     }
 
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
-    responseRecorded = false; // Reset response tracking for the new audio
-
-    audio.src = currentAudioFile; // Set the audio source here
-
-    // Wait until the audio is ready to play before starting playback
-    audio.addEventListener('canplaythrough', () => {
-      setTimeout(() => {
-        startTime = Date.now();
-        audio.play().then(() => {
-          console.log("Playing audio:", currentAudioFile);
-        }).catch(error => {
-          console.error("Audio playback failed:", error);
-        });
-      }, 2000); // Delay before audio starts
-    }, { once: true });
+    responseRecorded = false;
+    
+    audio.src = currentAudioFile; // Set audio source for the current file
+    audio.play().then(() => {
+      startTime = Date.now();
+      console.log("Playing audio:", currentAudioFile);
+    }).catch(error => {
+      console.error("Audio playback failed:", error);
+    });
 
     audio.onended = () => {
-      // When the audio ends, reset the response recorded flag
-      responseRecorded = false; 
+      // Automatically starts the next audio after the current one ends
+      startTest();
     };
   }
 
   function recordReactionTime(keyPressed) {
-    if (responseRecorded) return; // Prevent recording multiple times during this audio
-    responseRecorded = true; // Set to true to prevent further recordings until the next audio
-
+    if (responseRecorded) return; // Prevent multiple recordings during audio
+    responseRecorded = true;
     const reactionTime = Date.now() - startTime;
 
     // Determine if the response was correct based on congruency
@@ -106,9 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
       reactionTime
     });
 
-    // Move to the next audio after a delay
+    // Add a short delay before the next audio starts playing
     setTimeout(() => {
-      startTest(); // Proceed to the next audio
+      startTest();
     }, 1000);
   }
 
