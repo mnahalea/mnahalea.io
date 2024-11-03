@@ -3,73 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auditory Stroop Test - Home</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-    }
-    h1 {
-      font-weight: bold;
-      font-size: 32px;
-    }
-    .instructions {
-      max-width: 600px;
-      line-height: 1.6;
-      font-size: 18px;
-    }
-    #categories {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 600px;
-      font-weight: bold;
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    #categories div {
-      flex: 1;
-      text-align: center;
-    }
-    #start-prompt {
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-  </style>
+  <title>Auditory Stroop Test</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Categories at the top -->
   <div id="categories">
     <div>Black</div>
     <div>White</div>
   </div>
 
-  <!-- Instructions -->
-  <div class="instructions">
-    <p>Put on your headphones. Make sure the volume is turned up to a comfortable level.</p>
-    <p>Words spoken by a black or white voice will be played one-by-one. Sort the ethnicity of the voice into the categories you see at the top.</p>
-    <p>When the item belongs to the category on the left, press the left ('A') key; when the item belongs to the category on the right, press the right ('L') key. Items belong to only one category.</p>
-    <p>This is a timed sorting task. GO AS FAST AS YOU CAN while making as few mistakes as possible. </p>
-  </div>
+  <div class="instructions">Press 'A' for Black voice and 'L' for White voice</div>
+  <button id="startButton">Start Test</button>
 
-  <!-- Start Prompt -->
-  <div id="start-prompt">Press SPACEBAR to start</div>
-
-  <script>
-    // Listen for spacebar press to start the test
-    document.addEventListener('keydown', (event) => {
-      if (event.code === 'Space') {
-        // Redirect to the test page when spacebar is pressed
-        window.location.href = "test.html";
-      }
-    });
-  </script>
+  <script src="test.js"></script>
 </body>
 </html>
