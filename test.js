@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const names = [
     "Von", "Kai", "Tyrone", "Malik", "Darius", "Jamal", 
-    "Connor", "Jake", "Brett", "Tanner", "Hunter", 
-    "Alexander", "Austin", "Brad", "Travis", "John",  
+    "Connor", "Jake", "Brett", "Tanner", "Hunter",
+    "Alexander", "Austin", "Brad", "Travis", "John", 
     "Marquise", "Lamar", "Kareem", "Demetrius", "Juan", 
     "Carlos", "Miguel", "Alejandro"
   ];
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextAudio = testAudioQueue.shift();
     currentAudioFile = nextAudio.audioFile;
     responseRecorded = false;
-    
+
     audio.src = currentAudioFile; // Set audio source for the current file
     audio.play().then(() => {
       startTime = Date.now();
@@ -98,10 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
       reactionTime
     });
 
-    // Add a short delay before the next audio starts playing
-    setTimeout(() => {
-      startTest();
-    }, 1000);
+    // No longer need to wait before starting the next audio,
+    // since audio.onended handles that.
   }
 
   document.addEventListener('keydown', (event) => {
