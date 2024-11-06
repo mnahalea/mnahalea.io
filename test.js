@@ -95,10 +95,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function recordReactionTime(keyPressed) {
     if (responseRecorded) return;
     responseRecorded = true;
+    
     const reactionTime = Date.now() - startTime;
-    const correct = (keyPressed === 'A' && /* condition for A being correct */) || 
-                    (keyPressed === 'L' && /* condition for L being correct */);
-    const congruency = /* Determine congruency based on the current audio context */;
+    const correct = (keyPressed === 'A' && conditionForA) || 
+                    (keyPressed === 'L' && conditionForL);
+    
+    const congruency = (currentAudioContext === 'neutral' ? 'neutral' :
+                        currentAudioContext === 'congruent' ? 'congruent' : 'incongruent');
+    
+    // Log or use reactionTime, correct, and congruency variables here
 
     reactionData.push({
       audioFile: currentAudioFile,
