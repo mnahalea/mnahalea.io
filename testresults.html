@@ -86,14 +86,17 @@
 
     // Populate results
     reactionData.forEach(entry => {
-      const row = document.createElement("tr");
-      row.innerHTML = 
+    const row = document.createElement("tr");
+    row.innerHTML = `
         <td>${entry.audioFile}</td>
         <td>${entry.name}</td>
         <td>${entry.congruency}</td>
         <td>${entry.keyPressed}</td>
         <td>${entry.correct ? "Yes" : "No"}</td>
         <td>${entry.reactionTime}</td>
+    `;
+    document.querySelector("table").appendChild(row); // Ensure you append the row to a table
+
       ;
 
       // Append the row to the appropriate table based on ethnicity
