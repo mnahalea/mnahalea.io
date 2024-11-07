@@ -100,8 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const correct = (keyPressed === 'A' && conditionForA) || 
                     (keyPressed === 'L' && conditionForL);
     
-    const congruency = (currentAudioContext === 'neutral' ? 'neutral' :
-                        currentAudioContext === 'congruent' ? 'congruent' : 'incongruent');
+    const conditionFora = nextAudio.ethnicity === "White"; // Example condition
+const conditionForl = nextAudio.ethnicity === "Black"; // Example condition
+const congruency = "neutral"; // Set congruency manually or define logic
+
     
     // Log or use reactionTime, correct, and congruency variables here
 
